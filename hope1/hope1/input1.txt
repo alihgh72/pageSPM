@@ -1,0 +1,102 @@
+
+0.bin:     file format elf32-littlearm
+
+
+Disassembly of section .init:
+
+00100000 <_init>:
+  100000:	e1a0c00d 	mov	ip, sp
+  100004:	e92ddff8 	push	{r3, r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
+  100008:	e24cb004 	sub	fp, ip, #4
+
+Disassembly of section .text:
+
+0010000c <main>:
+  10000c:	e92d4010 	push	{r4, lr}
+  100010:	eb000030 	bl	1000d8 <doCRC>
+  100014:	e1a04000 	mov	r4, r0
+  100018:	eb000013 	bl	10006c <FSM>
+  10001c:	e2940000 	adds	r0, r4, #0
+  100020:	13a00001 	movne	r0, #1
+  100024:	e8bd4010 	pop	{r4, lr}
+  100028:	e1a0f00e 	mov	100058
+
+0010002c <_start>:
+  10002c:	e59f0028 	ldr	r0, [pc, #40]	; 10005c <hang+0x4>
+  100030:	e59f1028 	ldr	r1, [pc, #40]	; 100060 <hang+0x8>
+  100034:	e59f2028 	ldr	r2, [pc, #40]	; 100064 <hang+0xc>
+  100038:	e3520000 	cmp	r2, #0
+  10003c:	0a000003 	beq	100050 <init_stack>
+  100040:	e3a04000 	mov	r4, #0
+
+00100044 <zero>:
+  100044:	e4c04001 	strb	r4, [r0], #1
+  100048:	e2522001 	subs	r2, r2, #1
+  10004c:	1afffffc 	bne	100044 <zero>
+
+00100050 <init_stack>:
+  100050:	e59fd010 	ldr	sp, [pc, #16]	; 100068 <hang+0x10>
+  100054:	ebffffec 	bl	10000c <main>
+
+00100058 <hang>:
+  100058:	eafffffe 	b	100058 <hang>
+  10005c:	00204be4 	.word	0x00204be4
+  100060:	00204bf0 	.word	0x00204bf0
+  100064:	0000000c 	.word	0x0000000c
+  100068:	00304bf0 	.word	0x00304bf0
+
+0010006c <FSM>:
+  10006c:	e1a00000 	nop			; (mov r0, r0)
+  100070:	e1a0f00e 	mov	10001c
+
+Disassembly of section .fi_text:
+
+00100074 <crc32file>:
+  100074:	e92d0070 	push	{r4, r5, r6}
+
+00100078 <bzloop0>:
+  100078:	e1a00000 	nop			; (mov r0, r0)
+  10007c:	e59f6048 	ldr	r6, [pc, #72]	; 1000cc <bzloop1+0x18>
+  100080:	e59f5048 	ldr	r5, [pc, #72]	; 1000d0 <bzloop1+0x1c>
+  100084:	e3a03000 	mov	r3, #0
+  100088:	e3e0c000 	mvn	ip, #0
+  10008c:	e7d04003 	ldrb	r4, [r0, r3]
+  100090:	e024400c 	eor	r4, r4, ip
+  100094:	e20440ff 	and	r4, r4, #255	; 0xff
+  100098:	e7964104 	ldr	r4, [r6, r4, lsl #2]
+  10009c:	e2833002 	add	r3, r3, #2
+  1000a0:	e1530005 	cmp	r3, r5
+  1000a4:	e024c42c 	eor	ip, r4, ip, lsr #8
+  1000a8:	1afffff7 	bne	10008c <bzloop0+0x14>
+  1000ac:	e59f3020 	ldr	r3, [pc, #32]	; 1000d4 <bzloop1+0x20>
+  1000b0:	e5823000 	str	r3, [r2]
+
+001000b4 <bzloop1>:
+  1000b4:	e1a00000 	nop			; (mov r0, r0)
+  1000b8:	e1e0c00c 	mvn	ip, ip
+  1000bc:	e3a00000 	mov	r0, #0
+  1000c0:	e581c000 	str	ip, [r1]
+  1000c4:	e8bd0070 	pop	{r4, r5, r6}
+  1000c8:	e1a0f00e 	mov	1000ec
+  1000cc:	0010010c 	.word	0x0010010c
+  1000d0:	00004be2 	.word	0x00004be2
+  1000d4:	000025f1 	.word	0x000025f1
+
+001000d8 <doCRC>:
+  1000d8:	e92d4008 	push	{r3, lr}
+  1000dc:	e59f0010 	ldr	r0, [pc, #16]	; 1000f4 <doCRC+0x1c>
+  1000e0:	e59f1010 	ldr	r1, [pc, #16]	; 1000f8 <doCRC+0x20>
+  1000e4:	e59f2010 	ldr	r2, [pc, #16]	; 1000fc <doCRC+0x24>
+  1000e8:	ebffffe1 	bl	100074 <crc32file>
+  1000ec:	e8bd4008 	pop	{r3, lr}
+  1000f0:	e1a0f00e 	mov	100014
+  1000f4:	00200000 	.word	0x00200000
+  1000f8:	00204be8 	.word	0x00204be8
+  1000fc:	00204be4 	.word	0x00204be4
+
+Disassembly of section .fini:
+
+00100100 <_fini>:
+  100100:	e1a0c00d 	mov	ip, sp
+  100104:	e92ddff8 	push	{r3, r4, r5, r6, r7, r8, r9, sl, fp, ip, lr, pc}
+  100108:	e24cb004 	sub	fp, ip, #4
