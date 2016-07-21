@@ -79,6 +79,7 @@ int main()
 		i++;
 	}
 	
+
 	getchar();
 	return 0;
 }
@@ -181,6 +182,7 @@ void createBasicBlock(int block_size)
 		{
 			int x = (curr->start - minAddr) / 4 + i;
 			startBlock[x] = curr;
+			curr->end = curr->start + curr->size * 4;
 			if ((targetAddr[x] != 0) && ((targetAddr[x] > curr->start + 4 * curr->size) || (targetAddr[x] < curr->start)))
 			{
 				branch++;
@@ -192,8 +194,21 @@ void createBasicBlock(int block_size)
 					cout << curr->start << " shrink block size " << curr->size << endl;
 				}
 			}
+
+			for (unsigned int j = 0; j <= ins_cnt_total; j++)
+			{
+				if ((addrIns[x] == targetAddr[j]) && (startBlock[x]->start > targetAddr[j] || startBlock[x]->end < targetAddr[j]))
+				{
+					curr->size = i - 1;
+					i = 0;
+					branch = 0;
+					cout << curr->start << " startWithjump shrink block size " << curr->size << endl;
+					break;
+				}
+			}
+
 		}
-		curr->end = curr->start + curr->size * 4;
+		
 
 		if (curr->end > maxAddr)
 		{
@@ -223,8 +238,6 @@ void createBasicBlock(int block_size)
 			startBlock[i]->next1 = startBlock[tar];
 		}
 	}
-
-
 }
 
 unsigned int decodeInputIns(string tmp)
