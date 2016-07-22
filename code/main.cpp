@@ -73,7 +73,7 @@ int main()
 		if (i == 0 || startBlock[i] != startBlock[i-1])
 		{
 			//cout << cntr << "\t" << startBlock[i] << endl;
-			cout << cntr << "\t" << startBlock[i]->start << "\t" << startBlock[i]->size << "\t" << startBlock[i]->next1<< "\t" << startBlock[i]->end << endl;
+			cout << cntr << "\t" << (hex) << startBlock[i]->start << "\t" << startBlock[i]->size << "\t" << startBlock[i]->next1<< "\t" << startBlock[i]->end << endl;
 			cntr++;
 		}
 		i++;
@@ -182,31 +182,34 @@ void createBasicBlock(int block_size)
 		{
 			int x = (curr->start - minAddr) / 4 + i;
 			startBlock[x] = curr;
-			curr->end = curr->start + curr->size * 4;
+			curr->end = curr->start + (curr->size-1) * 4;
 			if ((targetAddr[x] != 0) && ((targetAddr[x] > curr->start + 4 * curr->size) || (targetAddr[x] < curr->start)))
 			{
 				branch++;
 				if (branch > 1)
 				{
-					curr->size = i - 1;
+					curr->size = i;
 					i = 0;
 					branch = 0;
 					cout << curr->start << " shrink block size " << curr->size << endl;
 				}
 			}
-
-			for (unsigned int j = 0; j <= ins_cnt_total; j++)
+			/*
+			// this part added for seprate block if some block jump to these address
+			for (int j = 0; j <= ins_cnt_total; j++)
 			{
-				if ((addrIns[x] == targetAddr[j]) && (startBlock[x]->start > targetAddr[j] || startBlock[x]->end < targetAddr[j]))
+				if (i == 0)
+					continue;
+				if ((addrIns[x] == targetAddr[j]) && (startBlock[x]->start > addrIns[j] || startBlock[x]->end < addrIns[j]))
 				{
-					curr->size = i - 1;
+					curr->size = i;
 					i = 0;
 					branch = 0;
 					cout << curr->start << " startWithjump shrink block size " << curr->size << endl;
 					break;
 				}
 			}
-
+			*/
 		}
 		
 
@@ -217,7 +220,7 @@ void createBasicBlock(int block_size)
 			break;
 		}
 
-		int t = (curr->end - minAddr) / 4;
+		int t = (curr->end - minAddr) / 4; t++;
 			startBlock[t] = new BB();
 			startBlock[t]->start = addrIns[t];
 			cout << "new block at address " << addrIns[t] << endl;
